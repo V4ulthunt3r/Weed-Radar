@@ -11,7 +11,7 @@
   <link href="./styles.css" rel="stylesheet">
 </head>
 <body class="bg-void-green">
-<section class="w-full bg-void-green flex justify-center gap-48  py-12 md:py-24 lg:py-32 xl:py-48">
+<section class="w-full bg-void-green flex justify-center gap-48  py-12 md:py-24 lg:py-32 xl:py-48 logo-negative-margin">
   <div class="flex flex-col justify-center space-y-4">
     <h1 class="font-merriweather font-extralight text-3xl tracking-tighter sm:text-5xl xl:text-6xl/none text-nebula-green">
       Weed Radar</h1>
@@ -19,7 +19,27 @@
   </div>
   <img src="./logo.svg" width="440" height="248" class="hidden lg:block" alt="Logo"/>
 </section>
-<section class="w-full flex flex-col content-center py-12 md:py-24 p-12 gap-8 bg-stardust-silver text-void-navy">
+<section class="w-full bg-stardust-silver flex flex-col items-center justify-center py-12 md:py-24 p-12 gap-8">
+  <div class="text-center space-y-6">
+    <h2 class="text-3xl font-bold tracking-tighter text-nebula-green">
+      Jetzt im App Store verfügbar
+    </h2>
+    <p class="text-void-navy md:text-xl font-light max-w-2xl">
+      Laden Sie Weed Radar jetzt kostenlos herunter und entdecken Sie die beste Bubatzkarte für Ihr iPhone
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-8 mt-8">
+      <a href="#" class="inline-flex items-center justify-center px-8 py-4 bg-nebula-green text-white font-semibold rounded-lg hover:bg-opacity-90 transition-all duration-200 shadow-lg">
+        
+      </a>
+      <div class="text-center logo-negative-margin">
+        <a href="https://apps.apple.com/de/app/weed-radar/id6504120839" target="_blank" rel="noopener noreferrer">
+          <img src="./appstore.png" alt="QR Code für App Store" class="w-12 h-12 mx-auto border border-nebula-green rounded shadow-sm hover:opacity-80 transition-opacity cursor-pointer" />
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="w-full flex flex-col content-center py-12 md:py-24 p-12 gap-8 bg-void-green text-stardust-green">
   <div class="container">
     <div class="space-y-4"><h2 class="text-2xl font-bold tracking-tighter text-nebula-green">
       Support
@@ -45,7 +65,7 @@
     </div>
   </div>
 </section>
-<section class="w-full bg-void-green flex flex-col content-center py-12 md:py-24 p-12 gap-8">
+<section class="w-full bg-stardust-silver flex flex-col content-center py-12 md:py-24 p-12 gap-8 text-void-navy">
   <h2 class="text-2xl font-bold tracking-tighter text-nebula-green">
     Impressum
   </h2>
