@@ -2,13 +2,11 @@
 
 /* Custom logo margin adjustments */
 .logo-negative-margin {
-  margin-top: -4rem;
-  margin-bottom: -4rem;
+  /* Removed negative margins that were causing layout issues */
 }
 
 @media (min-width: 768px) {
   .logo-negative-margin {
-    margin-top: -8rem;
-    margin-bottom: -8rem;
+    /* Removed negative margins that were causing layout issues */
   }
 }
