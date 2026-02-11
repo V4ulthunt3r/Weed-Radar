@@ -1,0 +1,7 @@
+{
+  "version": "DUMMY-VERSION",
+  "createdAt": "DUMMY-ISO-DATE",
+  "sizeBytes": 0,
+  "sha256": "DUMMY-SHA256",
+  "url": "https://github.com/DUMMY-GITHUB-USER/DUMMY-REPO/releases/download/DUMMY-TAG/weedradar.sqlite.zst"
+}
