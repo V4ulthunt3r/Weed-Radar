@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900&display=swap"
+        rel="stylesheet">
+  <title>Weed Radar — Live demo (cannabis map)</title>
+  <link rel="icon" href="../icondark_wr.png">
+  <link href="../landing.css" rel="stylesheet">
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <!-- Turf.js for buffers / distance / point-in-polygon -->
+  <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
+
+  <style>
+    .radar-main { padding: 28px 0 64px; min-height: 70vh; }
+    .radar-head { text-align: center; margin-bottom: 22px; }
+    .radar-head h1 { font-size: clamp(1.7rem, 4vw, 2.6rem); margin: 0 0 8px; }
+    .radar-head p { color: var(--text-dim); max-width: 640px; margin: 0 auto; }
+
+    .radar-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 860px) { .radar-layout { grid-template-columns: 1fr; } }
+
+    .radar-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+      position: sticky; top: 16px;
+    }
+    @media (max-width: 860px) { .radar-panel { position: static; } }
+
+    .status-card {
+      border-radius: 16px;
+      padding: 18px;
+      text-align: center;
+      border: 1px solid var(--border-soft);
+      background: var(--surface-2);
+      transition: background .3s ease, border-color .3s ease;
+    }
+    .status-dot {
+      width: 16px; height: 16px; border-radius: 50%;
+      display: inline-block; margin-right: 8px; vertical-align: middle;
+      box-shadow: 0 0 0 0 rgba(0,0,0,0);
+    }
+    .status-title { font-weight: 700; font-size: 1.15rem; vertical-align: middle; }
+    .status-sub { color: var(--text-dim); margin-top: 8px; font-size: .92rem; min-height: 1.2em; }
+
+    .st-green  { border-color: rgba(95,214,138,.4);  background: rgba(95,214,138,.10); }
+    .st-yellow { border-color: rgba(240,200,90,.4);  background: rgba(240,200,90,.10); }
+    .st-red    { border-color: rgba(240,90,90,.45);  background: rgba(240,90,90,.12); }
+    .dot-green  { background: #5fd68a; }
+    .dot-yellow { background: #f0c85a; }
+    .dot-red    { background: #f05a5a; }
+    .dot-grey   { background: #6f8579; }
+
+    .radar-btn { width: 100%; justify-content: center; cursor: pointer; border: none; margin-top: 16px; }
+    .radar-controls { margin-top: 18px; }
+    .radar-controls label { font-size: .85rem; color: var(--text-dim); display: block; margin-bottom: 6px; }
+    .radar-controls output { color: var(--accent-bright); font-weight: 600; }
+    input[type=range] { width: 100%; accent-color: var(--accent); }
+
+    #map {
+      height: 560px; border-radius: var(--radius);
+      border: 1px solid var(--border); overflow: hidden;
+      background: #0c130e;
+    }
+    @media (max-width: 860px) { #map { height: 420px; } }
+    .leaflet-container { background: #0c130e; font-family: "Roboto", sans-serif; }
+    .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--surface-2); color: var(--text); }
+    .leaflet-popup-content { margin: 12px 14px; }
+    .leaflet-popup-content b { color: var(--accent-bright); }
+
+    .legend { margin-top: 16px; font-size: .85rem; color: var(--text-dim); }
+    .legend div { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+    .swatch { width: 14px; height: 14px; border-radius: 4px; flex: none; }
+    .sw-red    { background: rgba(240,90,90,.35);  border: 1px solid rgba(240,90,90,.7); }
+    .sw-short  { background: rgba(240,160,60,.35); border: 1px solid rgba(240,160,60,.8); }
+
+    .radar-note {
+      margin-top: 22px; font-size: .78rem; color: var(--text-faint);
+      border-top: 1px solid var(--border-soft); padding-top: 14px; line-height: 1.5;
+    }
+    .radar-busy { color: var(--accent); font-size: .82rem; margin-top: 10px; min-height: 1.1em; }
+    .pro-hint {
+      margin-top: 18px; text-align: center; font-size: .85rem; color: var(--text-dim);
+    }
+    .pro-hint a { color: var(--accent-bright); font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="site-header">
+  <nav class="wrap nav">
+    <a class="nav-brand" href="./index.html">
+      <img src="../icondark_wr.png" alt="Weed Radar">
+      <span>Weed Radar</span>
+    </a>
+    <div class="nav-right">
+      <div class="lang-switch">
+        <a href="./index.html">← Home</a>
+      </div>
+      <a class="nav-cta" href="https://apps.apple.com/de/app/weed-radar/id6504120839" target="_blank" rel="noopener noreferrer">App Store</a>
+    </div>
+  </nav>
+</div>
+
+<main class="radar-main">
+  <div class="wrap">
+    <div class="radar-head">
+      <h1>Live <span class="accent">demo</span></h1>
+      <p>A lightweight web version of the cannabis map. Check your location or pan the map —
+        red areas mark the 100‑metre consumption ban zones around schools, kindergartens, playgrounds and more.</p>
+    </div>
+
+    <div class="radar-layout">
+      <!-- CONTROL PANEL -->
+      <aside class="radar-panel">
+        <div id="statusCard" class="status-card">
+          <span id="statusDot" class="status-dot dot-grey"></span>
+          <span id="statusTitle" class="status-title">Location unknown</span>
+          <div id="statusSub" class="status-sub">Tap “Check my location”.</div>
+        </div>
+
+        <button id="checkBtn" class="btn btn-primary radar-btn">📍 Check my location</button>
+        <div id="busy" class="radar-busy"></div>
+
+        <div class="radar-controls">
+          <label>Search radius: <output id="radiusOut">3.0 km</output></label>
+          <input id="radiusRange" type="range" min="500" max="8000" step="500" value="3000">
+        </div>
+
+        <div class="legend">
+          <div><span class="swatch sw-red"></span> 100 m ban zone (school, kindergarten, playground, sports facility, university, military)</div>
+          <div><span class="swatch sw-short"></span> Pedestrian zone (7am–8pm) &amp; train stations</div>
+        </div>
+
+        <div class="pro-hint">
+          Full features — offline map, Live Activity &amp; widget —
+          are in the <a href="https://apps.apple.com/de/app/weed-radar/id6504120839" target="_blank" rel="noopener noreferrer">iOS app</a>.
+        </div>
+
+        <p class="radar-note">
+          ⚠️ Not legal advice. Provided without warranty, based on OpenStreetMap data (ODbL)
+          that may be incomplete. The German Cannabis Act (KCanG §5) is the sole authority.
+          This web demo is for illustration only.
+        </p>
+      </aside>
+
+      <!-- MAP -->
+      <div id="map"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---- Zone spec, mirrored 1:1 from the iOS app (OverpassQuery + OverpassViewModel) ----
+  // 100 m zones: red < 100, yellow < 120, green otherwise.
+  // Short zones (pedestrian 7am–8pm + train stations/platforms): red < 5, yellow < 10, green otherwise.
+  const BUFFER_100 = 100;   // metres drawn around 100 m-zone features
+  const BUFFER_SHORT = 5;   // metres drawn around short-zone features
+  const DEFAULT_CENTER = [49.4447, 11.0764]; // Nuremberg fallback
+  const TILE = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+
+  let radiusMeters = 3000;
+  let map, zoneLayer, userMarker, userCircle;
+  let loadTimer = null;
+  let lastLoadKey = "";
+
+  // ---- Classify an OSM element into a zone category (returns null if irrelevant) ----
+  function classify(tags) {
+    if (!tags) return null;
+    const a = tags.amenity, l = tags.leisure;
+    if (a && ["school", "kindergarten", "university", "college", "training"].includes(a)) {
+      return { zone: "100", label: labelFor("amenity", a) };
+    }
+    if (l && ["playground", "sports_centre"].includes(l)) {
+      return { zone: "100", label: labelFor("leisure", l) };
+    }
+    if (tags.landuse === "military" || tags.military === "military_all" || tags.military === "base") {
+      return { zone: "100", label: "Military site" };
+    }
+    if (tags.highway === "pedestrian") {
+      return { zone: "short", kind: "pedestrian", label: "Pedestrian zone" };
+    }
+    if (tags.railway === "station" || tags.railway === "halt" ||
+        tags.public_transport === "station" || tags.building === "train_station" ||
+        (tags.public_transport === "platform" && tags.railway === "platform")) {
+      return { zone: "short", kind: "station", label: "Train station / platform" };
+    }
+    return null;
+  }
+
+  function labelFor(key, val) {
+    const m = {
+      "amenity:school": "School", "amenity:kindergarten": "Kindergarten",
+      "amenity:university": "University", "amenity:college": "College",
+      "amenity:training": "Training facility",
+      "leisure:playground": "Playground", "leisure:sports_centre": "Sports facility"
+    };
+    return m[key + ":" + val] || val;
+  }
+
+  // Pedestrian zones only count between 7am and 8pm in the app.
+  function pedestrianActive() {
+    const h = new Date().getHours();
+    return h >= 7 && h < 20;
+  }
+
+  // ---- Convert an Overpass element (out geom) to a GeoJSON geometry ----
+  function elementToGeoJSON(el) {
+    if (el.type === "node" && el.lat != null) {
+      return { type: "Point", coordinates: [el.lon, el.lat] };
+    }
+    if (el.type === "way" && el.geometry) {
+      const coords = el.geometry.map(p => [p.lon, p.lat]);
+      if (coords.length < 2) return null;
+      const closed = coords.length >= 4 &&
+        coords[0][0] === coords[coords.length - 1][0] &&
+        coords[0][1] === coords[coords.length - 1][1];
+      return closed
+        ? { type: "Polygon", coordinates: [coords] }
+        : { type: "LineString", coordinates: coords };
+    }
+    if (el.type === "relation" && el.members) {
+      // Multipolygon: collect outer/inner rings that carry geometry.
+      const outers = [];
+      el.members.forEach(m => {
+        if (m.geometry && m.geometry.length >= 2) {
+          const ring = m.geometry.map(p => [p.lon, p.lat]);
+          outers.push([ring]);
+        }
+      });
+      if (!outers.length) return null;
+      return outers.length === 1
+        ? { type: "Polygon", coordinates: outers[0] }
+        : { type: "MultiPolygon", coordinates: outers };
+    }
+    return null;
+  }
+
+  // ---- Build one Overpass query around a center, mirroring the app's tag set ----
+  function buildQuery(lat, lon, r) {
+    return `[out:json][timeout:25];
+(
+  way["amenity"~"^(school|kindergarten|university|college|training)$"](around:${r},${lat},${lon});
+  rel["amenity"~"^(school|kindergarten|university|college|training)$"](around:${r},${lat},${lon});
+  way["leisure"~"^(playground|sports_centre)$"](around:${r},${lat},${lon});
+  rel["leisure"~"^(playground|sports_centre)$"](around:${r},${lat},${lon});
+  way["landuse"="military"](around:${r},${lat},${lon});
+  rel["landuse"="military"](around:${r},${lat},${lon});
+  way["military"~"^(military_all|base)$"](around:${r},${lat},${lon});
+  rel["military"~"^(military_all|base)$"](around:${r},${lat},${lon});
+  way["highway"="pedestrian"](around:${r},${lat},${lon});
+  rel["highway"="pedestrian"](around:${r},${lat},${lon});
+  nwr["railway"~"^(station|halt)$"](around:${r},${lat},${lon});
+  nwr["public_transport"="station"](around:${r},${lat},${lon});
+  nwr["building"="train_station"](around:${r},${lat},${lon});
+  nwr["public_transport"="platform"]["railway"="platform"](around:${r},${lat},${lon});
+);
+out geom;`;
+  }
+
+  const OVERPASS_ENDPOINTS = [
+    "https://overpass-api.de/api/interpreter",
+    "https://overpass.kumi.systems/api/interpreter"
+  ];
+
+  async function runOverpass(query) {
+    let lastErr;
+    for (const url of OVERPASS_ENDPOINTS) {
+      try {
+        const res = await fetch(url, { method: "POST", body: "data=" + encodeURIComponent(query) });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return await res.json();
+      } catch (e) { lastErr = e; }
+    }
+    throw lastErr || new Error("Overpass unreachable");
+  }
+
+  // ---- Distance from a point to a feature, mirroring findNearestNeighbour ----
+  // Inside polygon → 0; otherwise min distance to any vertex (in metres).
+  function distanceToFeature(userPt, geom) {
+    if (geom.type === "Polygon" || geom.type === "MultiPolygon") {
+      try { if (turf.booleanPointInPolygon(userPt, geom)) return 0; } catch (e) {}
+    }
+    let min = Infinity;
+    const visit = coords => {
+      if (typeof coords[0] === "number") {
+        const d = turf.distance(userPt, turf.point(coords), { units: "meters" });
+        if (d < min) min = d;
+      } else {
+        coords.forEach(visit);
+      }
+    };
+    visit(geom.coordinates);
+    return min;
+  }
+
+  // ---- Render zones + (optionally) compute status for a user position ----
+  let currentFeatures = []; // {geom, cat}
+
+  async function loadZones(centerLat, centerLon) {
+    const key = centerLat.toFixed(3) + "," + centerLon.toFixed(3) + "@" + radiusMeters;
+    if (key === lastLoadKey) return;
+    lastLoadKey = key;
+    setBusy("Loading zones …");
+    try {
+      const data = await runOverpass(buildQuery(centerLat, centerLon, radiusMeters));
+      const feats = [];
+      (data.elements || []).forEach(el => {
+        const cat = classify(el.tags);
+        if (!cat) return;
+        if (cat.kind === "pedestrian" && !pedestrianActive()) return; // 7am–8pm only
+        const geom = elementToGeoJSON(el);
+        if (!geom) return;
+        feats.push({ geom, cat, name: (el.tags && el.tags.name) || cat.label });
+      });
+      currentFeatures = feats;
+      drawZones(feats);
+      setBusy(feats.length ? "" : "No zones found within the search radius.");
+    } catch (e) {
+      setBusy("⚠️ Could not load data (Overpass rate limit?). Please try again.");
+    }
+  }
+
+  function drawZones(feats) {
+    zoneLayer.clearLayers();
+    feats.forEach(f => {
+      const is100 = f.cat.zone === "100";
+      const dist = is100 ? BUFFER_100 : BUFFER_SHORT;
+      let buffered;
+      try {
+        buffered = turf.buffer(turf.feature(f.geom), dist, { units: "meters" });
+      } catch (e) { buffered = null; }
+      const style = is100
+        ? { color: "#f05a5a", weight: 1, fillColor: "#f05a5a", fillOpacity: 0.22 }
+        : { color: "#f0a03c", weight: 1, fillColor: "#f0a03c", fillOpacity: 0.22 };
+      const layer = buffered ? L.geoJSON(buffered, { style }) : L.geoJSON(f.geom, { style });
+      layer.bindPopup("<b>" + escapeHtml(f.name) + "</b><br>" +
+        (is100 ? "100 m ban zone" : "Pedestrian zone / train station (ban)"));
+      layer.addTo(zoneLayer);
+    });
+  }
+
+  // ---- Status computation, mirroring updateWeedState ----
+  function computeStatus(userLat, userLon) {
+    const userPt = turf.point([userLon, userLat]);
+    let nearest100 = Infinity, nearestShort = Infinity, near100Name = null, nearShortName = null;
+    currentFeatures.forEach(f => {
+      const d = distanceToFeature(userPt, f.geom);
+      if (f.cat.zone === "100") {
+        if (d < nearest100) { nearest100 = d; near100Name = f.name; }
+      } else {
+        if (d < nearestShort) { nearestShort = d; nearShortName = f.name; }
+      }
+    });
+
+    const warn = nearest100 < 100 ? "red" : (nearest100 < 120 ? "yellow" : "green");
+    const shortWarn = nearestShort < 5 ? "red" : (nearestShort < 10 ? "yellow" : "green");
+    let state = "green";
+    if (warn === "red" || shortWarn === "red") state = "red";
+    else if (warn === "yellow" || shortWarn === "yellow") state = "yellow";
+
+    // pick the closer / governing neighbour for the message
+    const use100 = nearest100 <= nearestShort;
+    const dist = use100 ? nearest100 : nearestShort;
+    const name = use100 ? near100Name : nearShortName;
+    return { state, dist: isFinite(dist) ? Math.round(dist) : null, name };
+  }
+
+  function applyStatus(s) {
+    const card = document.getElementById("statusCard");
+    const dot = document.getElementById("statusDot");
+    const title = document.getElementById("statusTitle");
+    const sub = document.getElementById("statusSub");
+    card.className = "status-card st-" + s.state;
+    dot.className = "status-dot dot-" + s.state;
+    const txt = { green: "All clear 🌿", yellow: "Careful — close", red: "Ban zone 🚫" };
+    title.textContent = txt[s.state];
+    if (s.dist == null) {
+      sub.textContent = "No zones found nearby.";
+    } else {
+      const ds = s.dist < 1000 ? s.dist + " m" : (s.dist / 1000).toFixed(1) + " km";
+      sub.textContent = ds + " to the nearest zone" + (s.name ? " (" + s.name + ")" : "");
+    }
+  }
+
+  // ---- Geolocation check ----
+  function checkLocation() {
+    if (!navigator.geolocation) { setBusy("Geolocation not available."); return; }
+    setBusy("Determining location …");
+    navigator.geolocation.getCurrentPosition(async pos => {
+      const { latitude, longitude } = pos.coords;
+      map.setView([latitude, longitude], 16);
+      setUserMarker(latitude, longitude);
+      lastLoadKey = ""; // force reload around the user
+      await loadZones(latitude, longitude);
+      applyStatus(computeStatus(latitude, longitude));
+    }, err => {
+      setBusy("Location not granted. You can still explore the map.");
+    }, { enableHighAccuracy: true, timeout: 10000 });
+  }
+
+  function setUserMarker(lat, lon) {
+    if (userMarker) map.removeLayer(userMarker);
+    if (userCircle) map.removeLayer(userCircle);
+    userCircle = L.circle([lat, lon], { radius: 30, color: "#8ef0ad", fillColor: "#8ef0ad", fillOpacity: 0.25, weight: 1 }).addTo(map);
+    userMarker = L.circleMarker([lat, lon], { radius: 7, color: "#0a0f0c", weight: 2, fillColor: "#8ef0ad", fillOpacity: 1 })
+      .addTo(map).bindPopup("Your location");
+  }
+
+  // ---- Helpers ----
+  function setBusy(t) { document.getElementById("busy").textContent = t; }
+  function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+  function scheduleLoad() {
+    clearTimeout(loadTimer);
+    loadTimer = setTimeout(() => {
+      const c = map.getCenter();
+      loadZones(c.lat, c.lng);
+    }, 700);
+  }
+
+  // ---- Init ----
+  document.addEventListener("DOMContentLoaded", () => {
+    map = L.map("map", { zoomControl: true }).setView(DEFAULT_CENTER, 15);
+    L.tileLayer(TILE, { maxZoom: 19, attribution: "© OpenStreetMap contributors (ODbL)" }).addTo(map);
+    zoneLayer = L.layerGroup().addTo(map);
+
+    map.on("moveend", scheduleLoad);
+
+    document.getElementById("checkBtn").addEventListener("click", checkLocation);
+
+    const range = document.getElementById("radiusRange");
+    const out = document.getElementById("radiusOut");
+    const fmtRadius = m => m < 1000 ? m + " m" : (m / 1000).toLocaleString("en-US", { maximumFractionDigits: 1 }) + " km";
+    range.addEventListener("input", () => { out.textContent = fmtRadius(parseInt(range.value, 10)); });
+    range.addEventListener("change", () => {
+      radiusMeters = parseInt(range.value, 10);
+      lastLoadKey = "";
+      const c = map.getCenter();
+      loadZones(c.lat, c.lng);
+    });
+
+    // initial load around default center, then try geolocation silently
+    loadZones(DEFAULT_CENTER[0], DEFAULT_CENTER[1]);
+  });
+})();
+</script>
+</body>
+</html>
