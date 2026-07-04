@@ -48,8 +48,30 @@
       the security and integrity of this website and the service. Details at
       <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="ugc">GitHub Privacy Statement</a>.</p>
 
-    <h3>Collection and processing of personal data</h3>
-    <p>We do not collect any personal data on this website. We do not use cookies or any other tracking technologies.</p>
+    <h3>Cookies &amp; consent</h3>
+    <p>This website uses optional analytics and advertising services only with your explicit consent via our
+      consent banner. Necessary functions work without cookies. Your choice is stored locally in your browser
+      (localStorage) and can be changed at any time via
+      <a href="#" onclick="if(window.WRConsent){window.WRConsent.open();}return false;">cookie settings</a>.</p>
+    <!-- TODO(legal): Have legal basis (Art. 6(1)(a) GDPR), withdrawal and retention period reviewed by a
+         qualified person and stated explicitly. -->
+
+    <h3>Microsoft Clarity</h3>
+    <p>After consent to the “Analytics” category, we use Microsoft Clarity to analyse the use of this website
+      (e.g. aggregated click/scroll data and session replays). Provider: Microsoft Corporation.</p>
+    <!-- TODO(legal): Add/verify data transfer to the USA, data processing agreement, links to Microsoft’s
+         privacy policy and retention period. -->
+
+    <h3>Google Analytics 4</h3>
+    <p>After consent to the “Analytics” category, Google Analytics 4 may be used for reach measurement
+      (with Consent Mode and IP anonymisation). Provider: Google Ireland Ltd.</p>
+    <!-- TODO(legal): Add/verify data transfer to the USA, retention period, opt-out and exact purposes. -->
+
+    <h3>Google AdSense</h3>
+    <p>After consent to the “Marketing/Ads” category, Google AdSense (Auto Ads) may be used to display
+      advertising. Provider: Google Ireland Ltd.</p>
+    <!-- TODO(legal): Add/verify personalised vs. non-personalised ads, data transfer to the USA and
+         retention period. -->
   </div>
 </section>
 
@@ -71,5 +93,8 @@
   </div>
 </footer>
 
+<!-- Consent & Tracking — loads Clarity/GA/AdSense only after consent -->
+<script src="../consent-config.js"></script>
+<script src="../consent.js"></script>
 </body>
 </html>

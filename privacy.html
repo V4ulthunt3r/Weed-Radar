@@ -49,9 +49,33 @@
       Details unter
       <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="ugc">GitHub Privacy Statement</a>.</p>
 
-    <h3>Erhebung und Verarbeitung personenbezogener Daten</h3>
-    <p>Wir erheben auf dieser Website keine personenbezogenen Daten. Wir verwenden keine Cookies oder sonstigen
-      Tracking-Technologien.</p>
+    <h3>Cookies &amp; Einwilligung</h3>
+    <p>Diese Website nutzt optionale Analyse- und Werbedienste ausschließlich nach deiner ausdrücklichen
+      Einwilligung über unser Consent-Banner. Notwendige Funktionen kommen ohne Cookies aus. Deine Auswahl
+      wird lokal in deinem Browser (localStorage) gespeichert und kann jederzeit über
+      <a href="#" onclick="if(window.WRConsent){window.WRConsent.open();}return false;">Cookie-Einstellungen</a>
+      geändert werden.</p>
+    <!-- TODO(rechtlich): Rechtsgrundlage (Art. 6 Abs. 1 lit. a DSGVO), Widerruf und Speicherdauer
+         durch fachkundige Person prüfen lassen und konkret benennen. -->
+
+    <h3>Microsoft Clarity</h3>
+    <p>Nach Einwilligung in die Kategorie „Analyse“ setzen wir Microsoft Clarity ein, um die Nutzung dieser
+      Website zu analysieren (z. B. aggregierte Klick- und Scroll-Daten sowie Sitzungswiedergaben). Anbieter
+      ist die Microsoft Corporation.</p>
+    <!-- TODO(rechtlich): Datenübermittlung in die USA, Auftragsverarbeitungsvertrag, Links zur
+         Microsoft-Datenschutzerklärung und Speicherdauer ergänzen/prüfen. -->
+
+    <h3>Google Analytics 4</h3>
+    <p>Nach Einwilligung in die Kategorie „Analyse“ kann Google Analytics 4 zur Reichweitenmessung eingesetzt
+      werden (mit Consent Mode und IP-Anonymisierung). Anbieter ist Google Ireland Ltd.</p>
+    <!-- TODO(rechtlich): Datenübermittlung USA, Speicherdauer, Opt-out und genaue Verarbeitungszwecke
+         ergänzen/prüfen. -->
+
+    <h3>Google AdSense</h3>
+    <p>Nach Einwilligung in die Kategorie „Marketing/Werbung“ kann Google AdSense (Auto Ads) zur Anzeige von
+      Werbung eingesetzt werden. Anbieter ist Google Ireland Ltd.</p>
+    <!-- TODO(rechtlich): Personalisierte vs. nicht-personalisierte Werbung, Datenübermittlung USA und
+         Speicherdauer ergänzen/prüfen. -->
   </div>
 </section>
 
@@ -73,5 +97,8 @@
   </div>
 </footer>
 
+<!-- Consent & Tracking — lädt Clarity/GA/AdSense erst nach Einwilligung -->
+<script src="./consent-config.js"></script>
+<script src="./consent.js"></script>
 </body>
 </html>
