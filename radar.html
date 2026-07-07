@@ -167,6 +167,73 @@
   </div>
 </main>
 
+<!-- CONTENT -->
+<section class="page-body" style="padding-top: 8px;">
+  <div class="wrap prose" style="max-width: 820px;">
+
+    <h2>So funktioniert die Live-Demo</h2>
+    <p>Die Live-Demo ist eine schlanke Web-Variante der Weed-Radar-App. Sie zeigt dir direkt im Browser,
+      wo in Deutschland öffentliches Kiffen wegen der gesetzlichen Konsumverbotszonen tabu ist – ganz ohne
+      Installation.</p>
+    <ul>
+      <li><strong>Karte erkunden:</strong> Verschiebe die Karte an einen beliebigen Ort. Rund um relevante
+        Einrichtungen werden automatisch die Verbotszonen als farbige Flächen eingezeichnet.</li>
+      <li><strong>Standort prüfen:</strong> Tippe auf „Meinen Standort prüfen". Die Demo ermittelt deine Position
+        und zeigt dir im Statusfeld, ob „die Luft rein ist" oder wie weit die nächste Verbotszone entfernt ist.</li>
+      <li><strong>Suchradius anpassen:</strong> Über den Regler bestimmst du, wie weit im Umkreis nach Zonen
+        gesucht wird (500 m bis 8 km).</li>
+    </ul>
+    <p>Die Berechnung – Klassifizierung der Orte, 100‑Meter‑Puffer und Abstandsmessung – läuft vollständig
+      in deinem Browser. Es werden keine Standortdaten an uns übertragen.</p>
+
+    <h2>Die Rechtslage: Konsumverbotszonen nach dem KCanG</h2>
+    <p>Seit dem 1. April 2024 ist der Umgang mit Cannabis in Deutschland im Konsumcannabisgesetz (KCanG) geregelt.
+      Der Besitz und Konsum ist für Erwachsene in bestimmten Grenzen erlaubt – aber <strong>nicht überall</strong>.
+      § 5 KCanG verbietet den öffentlichen Konsum an sensiblen Orten und in deren unmittelbarer Umgebung.</p>
+    <p>Als „in Sichtweite" gilt dabei laut Gesetz ein Abstand von <strong>weniger als 100 Metern</strong> zum
+      jeweiligen Eingangsbereich. Genau diese 100‑Meter‑Radien zeichnet die Karte rot ein. Zusätzlich gilt in
+      <strong>Fußgängerzonen ein Konsumverbot zwischen 7 und 20 Uhr</strong> – diese Zonen blendet die Demo
+      deshalb nur während dieser Uhrzeiten ein.</p>
+
+    <h2>Welche Orte lösen eine Verbotszone aus?</h2>
+    <p>Das Gesetz nennt in § 5 Abs. 1 KCanG ausdrücklich vier Kategorien, um die jeweils ein 100‑Meter‑Radius gilt:</p>
+    <ul>
+      <li><strong>Schulen</strong></li>
+      <li><strong>Kinder- und Jugendeinrichtungen</strong> (dazu zählen z. B. Kitas und Kindergärten)</li>
+      <li><strong>Kinderspielplätze</strong></li>
+      <li><strong>Öffentlich zugängliche Sportstätten</strong></li>
+    </ul>
+    <p>Darüber hinaus markiert die Demo vorsichtshalber weitere Orte, an denen ein Konsum häufig unzulässig ist
+      oder deren Umfeld sensibel ist – etwa <strong>Universitäten und Hochschulen</strong>, <strong>Militärgelände</strong>
+      sowie <strong>Bahnhöfe und Bahnsteige</strong> (hier gilt meist ein Hausrecht bzw. eine Hausordnung).
+      Diese zusätzlichen Markierungen dienen der Orientierung und gehen bewusst über den engen Gesetzeswortlaut hinaus.</p>
+
+    <h2>Woher stammen die Daten?</h2>
+    <p>Die eingezeichneten Orte stammen aus <strong>OpenStreetMap</strong> und werden live über die Overpass-API
+      abgefragt (Lizenz: ODbL). OpenStreetMap ist ein von Freiwilligen gepflegtes Kartenwerk – das bedeutet, dass
+      einzelne Einrichtungen fehlen, falsch eingetragen oder veraltet sein können. Die Karte kann daher nie
+      Vollständigkeit garantieren.</p>
+    <p>Maßgeblich ist immer die tatsächliche Rechtslage vor Ort. <strong>Diese Demo ist keine Rechtsberatung</strong>
+      und dient ausschließlich der Veranschaulichung. Im Zweifel gilt: lieber einen sicheren Abstand halten.</p>
+
+    <h2>Häufige Fragen</h2>
+    <h3>Ist Kiffen in Deutschland jetzt überall erlaubt?</h3>
+    <p>Nein. Erwachsene dürfen Cannabis in bestimmten Grenzen besitzen und konsumieren, aber der öffentliche
+      Konsum ist in den beschriebenen Verbotszonen sowie zu bestimmten Zeiten in Fußgängerzonen untersagt.</p>
+    <h3>Wie genau sind die 100‑Meter‑Zonen?</h3>
+    <p>Die Demo zeichnet einen 100‑Meter‑Puffer um die aus OpenStreetMap bekannten Orte. Da die zugrunde liegenden
+      Geodaten Ungenauigkeiten enthalten können, verstehe die Grenzen als Orientierung, nicht als metergenaue Angabe.</p>
+    <h3>Werden meine Standortdaten gespeichert?</h3>
+    <p>Nein. Die Standortprüfung läuft lokal in deinem Browser. Es werden keine Positionsdaten an uns übertragen.
+      Mehr dazu in unserer <a href="./privacy.html">Datenschutzerklärung</a>.</p>
+    <h3>Was kann die iOS-App zusätzlich?</h3>
+    <p>Die <a href="https://apps.apple.com/de/app/weed-radar/id6504120839" target="_blank" rel="noopener noreferrer">Weed‑Radar‑App</a>
+      bietet unter anderem eine Offline-Karte, eine Live-Aktivität und ein Home-Screen-Widget, das dir den Status
+      auch ohne geöffnete App anzeigt.</p>
+
+  </div>
+</section>
+
 <script>
 (function () {
   "use strict";

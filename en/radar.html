@@ -167,6 +167,72 @@
   </div>
 </main>
 
+<!-- CONTENT -->
+<section class="page-body" style="padding-top: 8px;">
+  <div class="wrap prose" style="max-width: 820px;">
+
+    <h2>How the live demo works</h2>
+    <p>The live demo is a lightweight web version of the Weed Radar app. Right in your browser, it shows you where
+      public cannabis consumption in Germany is off-limits because of the statutory ban zones — no installation
+      required.</p>
+    <ul>
+      <li><strong>Explore the map:</strong> Pan the map to any location. The ban zones around relevant facilities
+        are drawn automatically as coloured areas.</li>
+      <li><strong>Check your location:</strong> Tap “Check my location”. The demo determines your position and shows
+        in the status box whether “the air is clear” or how far away the nearest ban zone is.</li>
+      <li><strong>Adjust the search radius:</strong> Use the slider to set how far around you the demo searches for
+        zones (500 m to 8 km).</li>
+    </ul>
+    <p>The whole computation — classifying places, the 100‑metre buffer and distance measurement — runs entirely in
+      your browser. No location data is transmitted to us.</p>
+
+    <h2>The legal background: ban zones under the KCanG</h2>
+    <p>Since 1 April 2024, cannabis in Germany has been governed by the Consumer Cannabis Act (KCanG). Possession and
+      consumption are permitted for adults within certain limits — but <strong>not everywhere</strong>. Section 5 of
+      the KCanG prohibits public consumption at sensitive places and in their immediate vicinity.</p>
+    <p>“Within sight” is legally defined as a distance of <strong>less than 100 metres</strong> from the respective
+      entrance. These are exactly the 100‑metre radii the map draws in red. In addition, consumption is
+      <strong>prohibited in pedestrian zones between 7am and 8pm</strong> — which is why the demo only shows those
+      zones during that time window.</p>
+
+    <h2>Which places trigger a ban zone?</h2>
+    <p>Section 5(1) of the KCanG explicitly names four categories, each surrounded by a 100‑metre radius:</p>
+    <ul>
+      <li><strong>Schools</strong></li>
+      <li><strong>Children's and youth facilities</strong> (this includes, for example, nurseries and kindergartens)</li>
+      <li><strong>Children's playgrounds</strong></li>
+      <li><strong>Publicly accessible sports facilities</strong></li>
+    </ul>
+    <p>Beyond that, the demo also marks — as a precaution — further places where consumption is often not permitted or
+      whose surroundings are sensitive, such as <strong>universities and colleges</strong>, <strong>military sites</strong>
+      and <strong>train stations and platforms</strong> (which usually have their own house rules). These extra markings
+      are for orientation and deliberately go beyond the strict wording of the law.</p>
+
+    <h2>Where does the data come from?</h2>
+    <p>The places shown come from <strong>OpenStreetMap</strong> and are queried live via the Overpass API (licence:
+      ODbL). OpenStreetMap is a map maintained by volunteers — which means individual facilities may be missing,
+      mistagged or out of date. The map can therefore never guarantee completeness.</p>
+    <p>What always counts is the actual legal situation on the ground. <strong>This demo is not legal advice</strong>
+      and is for illustration only. When in doubt: keep a safe distance.</p>
+
+    <h2>Frequently asked questions</h2>
+    <h3>Is cannabis now allowed everywhere in Germany?</h3>
+    <p>No. Adults may possess and consume cannabis within certain limits, but public consumption is prohibited in the
+      ban zones described here as well as at certain times in pedestrian zones.</p>
+    <h3>How accurate are the 100‑metre zones?</h3>
+    <p>The demo draws a 100‑metre buffer around the places known from OpenStreetMap. Because the underlying geodata can
+      contain inaccuracies, treat the boundaries as orientation, not as a metre-precise figure.</p>
+    <h3>Is my location data stored?</h3>
+    <p>No. The location check runs locally in your browser. No position data is transmitted to us. Read more in our
+      <a href="./privacy.html">privacy policy</a>.</p>
+    <h3>What else can the iOS app do?</h3>
+    <p>The <a href="https://apps.apple.com/de/app/weed-radar/id6504120839" target="_blank" rel="noopener noreferrer">Weed Radar app</a>
+      offers, among other things, an offline map, a Live Activity and a home-screen widget that shows you the status
+      even without opening the app.</p>
+
+  </div>
+</section>
+
 <script>
 (function () {
   "use strict";
